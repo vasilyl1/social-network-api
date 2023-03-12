@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "seed": "node utils/seed.js"
   },
   "repository": {
     "type": "git",
@@ -13,7 +14,11 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^6.0.13"
+  },
   "bugs": {
     "url": "https://github.com/vasilyl1/social-network-api/issues"
   },
