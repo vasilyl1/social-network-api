@@ -64,11 +64,11 @@ module.exports = {
         try {
             const friend = await User.findOne({ _id: req.params.friendId });
             const user = await User.findOne({ _id: req.params.userId });
-            const alreadyFriend = user.friends.find(element => element._id == friend._id );
+            const alreadyFriend = user.friends.find(element => element._id == req.params.friendId);
             if (!friend || !user || !alreadyFriend) { // user not found, friend not found or not friends
                 return res.status(404).json({ message: 'Can not delete friend relation' });
             } else { // update friend to the user
-                const userUpdated = await User.updateOne({ _id: req.params.userId }, { friends: user.friends.splice(user.friends.indexOf(friend._id),1) });
+                const userUpdated = await User.updateOne({ _id: req.params.userId }, { friends: user.friends._id.splice(user.friends._id.indexOf(req.params.friendId),1) });
                 return res.json(userUpdated);
             }
         } catch (err) {
