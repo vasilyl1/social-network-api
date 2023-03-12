@@ -43,4 +43,36 @@ module.exports = {
             .then((dbUserData) => res.json(dbUserData))
             .catch((err) => res.status(500).json(err));
     },
+    // Add friend to user
+    async addFriend(req, res) {
+        try {
+            const friend = await User.findOne({ _id: req.params.friendId });
+            const user = await User.findOne({ _id: req.params.userId });
+            const alreadyFriend = user.friends.find(element => element._id == friend._id );
+            if (!friend || !user || alreadyFriend) { // user not found, friend not found or already friends
+                return res.status(404).json({ message: 'Can not assign the friend relation' });
+            } else { // update friend to the user
+                const userUpdated = await User.updateOne({ _id: req.params.userId }, { friends: user.friends.push(friend) });
+                return res.json(userUpdated);
+            }
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    },
+    // Delete friend from user
+    async deleteFriend(req, res) {
+        try {
+            const friend = await User.findOne({ _id: req.params.friendId });
+            const user = await User.findOne({ _id: req.params.userId });
+            const alreadyFriend = user.friends.find(element => element._id == friend._id );
+            if (!friend || !user || !alreadyFriend) { // user not found, friend not found or not friends
+                return res.status(404).json({ message: 'Can not delete friend relation' });
+            } else { // update friend to the user
+                const userUpdated = await User.updateOne({ _id: req.params.userId }, { friends: user.friends.splice(user.friends.indexOf(friend._id),1) });
+                return res.json(userUpdated);
+            }
+        } catch (err) {
+            res.status(500).json(err);
+        }
+    },
 };
