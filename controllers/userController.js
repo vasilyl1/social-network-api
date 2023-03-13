@@ -82,17 +82,17 @@ module.exports = {
         try {
             const friend = await User.findOne({ _id: req.params.friendId });
             const user = await User.findOne({ _id: req.params.userId });
-            const alreadyFriend = await User.findOne(
+           /* const alreadyFriend = await User.findOne(
                 {
                     $and: [
-                        { _id: req.params.userId}, 
+                        { '_id': req.params.userId }, 
                         { 'friends._id': req.params.friendId }
                         ]
                 }
-                );
-            //const alreadyFriend = user.friends.find(element => element._id == req.params.friendId);
+                );*/
+            const alreadyFriend = user.friends.find(element => element._id == req.params.friendId);
             if (!friend || !user || !alreadyFriend) { // user not found, friend not found or not friends
-                return res.status(404).json({ message: 'Can not delete friend relation' });
+                return res.status(404).json({ message: 'Can not modify friend relation' });
             } else { // update friend to the user
                 const userUpdated = await User.findOneAndUpdate(
                     { _id: req.params.userId }, 
