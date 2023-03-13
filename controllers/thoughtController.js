@@ -19,7 +19,10 @@ module.exports = {
     },
     // Update thought
     updateThought(req, res) {
-        Thought.updateOne({ _id: req.params.thoughtId }, req.body)
+        Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId }, 
+            { $set: req.body },
+            { runValidators: true, new: true })
             .then((thought) =>
                 !thought
                     ? res.status(404).json({ message: 'No thought found with that id' })
@@ -40,13 +43,17 @@ module.exports = {
     // Create thought
     async createThought(req, res) {
         try {
-            const user = await User.findOne({_id: thought.userId });
+            const user = await User.findOne({_id: req.body.userId });
             if (!user) {
                 return res.status(404).json({ message: 'No user found with that ID'});
             };
             const thought = await Thought.create(req.body);
             user.thoughts.push(thought);
-            const updatedUser = User.updateOne({_id: thought.userId }, user);
+            const updatedUser = await User.findOneAndUpdate(
+                {_id: req.body.userId }, 
+                { $addToSet: { thoughts: thought._id } },
+                { new: true }
+                );
             if (!updatedUser) { return res.status(404).json({ message: 'Could not update the user thought' }); }
             return res.json(thought);
         } catch (err) { res.status(500).json(err); }
