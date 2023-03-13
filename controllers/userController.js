@@ -26,7 +26,7 @@ module.exports = {
             .then((user) =>
                 !user
                     ? res.status(404).json({ message: 'No user found with that id' })
-                    : res.json(user)
+                    : res.status(200).json({ message: 'User successfully deleted' })
             )
             .catch((err) => res.status(500).json(err));
     },
@@ -58,7 +58,7 @@ module.exports = {
                 {
                     $and: [
                         { _id: req.params.userId}, 
-                        { friends._id: req.params.friendId }
+                        { 'friends._id': req.params.friendId }
                         ]
                 }
                 );
@@ -86,7 +86,7 @@ module.exports = {
                 {
                     $and: [
                         { _id: req.params.userId}, 
-                        { friends._id: req.params.friendId }
+                        { 'friends._id': req.params.friendId }
                         ]
                 }
                 );
@@ -94,7 +94,11 @@ module.exports = {
             if (!friend || !user || !alreadyFriend) { // user not found, friend not found or not friends
                 return res.status(404).json({ message: 'Can not delete friend relation' });
             } else { // update friend to the user
-                const userUpdated = await User.updateOne({ _id: req.params.userId }, { friends: user.friends._id.splice(user.friends._id.indexOf(req.params.friendId),1) });
+                const userUpdated = await User.findOneAndUpdate(
+                    { _id: req.params.userId }, 
+                    { $pull: { friends: req.params.friendId } },
+                    { new: true},
+                    );
                 return res.json(userUpdated);
             }
         } catch (err) {
