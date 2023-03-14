@@ -47,6 +47,7 @@ module.exports = {
             if (!user) {
                 return res.status(404).json({ message: 'No user found with that ID'});
             };
+            req.body.username = user.username;
             const thought = await Thought.create(req.body);
             user.thoughts.push(thought);
             const updatedUser = await User.findOneAndUpdate(
