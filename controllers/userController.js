@@ -66,13 +66,18 @@ module.exports = {
                 {
                     $and: [
                         { _id: req.params.userId },
-                        { 'friends._id': req.params.friendId }
+                        { 'req.params.friendId': { $in: user.friends} }
                     ]
                 }
             );
-            // const alreadyFriend = user.friends.find(element => element._id == friend._id );
-            if (!friend || !user || alreadyFriend) { // user not found, friend not found or already friends
-                return res.status(404).json({ message: 'Can not assign the friend relation' });
+            if (!friend || !user || alreadyFriend || req.params.friendId == req.params.userId) { // user not found, friend not found or already friends
+                if (req.params.friendId == req.params.userId) {
+                    return res.status(500).json({ message: 'Can not assign the friend relation to the same user' });
+                } else if (alreadyFriend) {
+                    return res.status(500).json({ message: 'Friends relationship is already present' });
+                } else {
+                    return res.status(404).json({ message: 'No such user or friend - check IDs' });
+                }
             } else { // update friend to the user
                 const userUpdated = await User.findOneAndUpdate(
                     { _id: req.params.userId },
@@ -90,14 +95,6 @@ module.exports = {
         try {
             const friend = await User.findOne({ _id: req.params.friendId });
             const user = await User.findOne({ _id: req.params.userId });
-            /* const alreadyFriend = await User.findOne(
-                 {
-                     $and: [
-                         { '_id': req.params.userId }, 
-                         { 'friends._id': req.params.friendId }
-                         ]
-                 }
-                 );*/
             const alreadyFriend = user.friends.find(element => element._id == req.params.friendId);
             if (!friend || !user || !alreadyFriend) { // user not found, friend not found or not friends
                 return res.status(404).json({ message: 'Can not modify friend relation' });
