@@ -45,7 +45,7 @@ Step 6: he contact information for questions is provided below for the reference
 
 Please refer to the video below which demonstrates the use of API (Insomnia tool has been used to correctly demonstrate GET, POST, PUT and DELETE requests):
 
-https://watch.screencastify.com/v/fzJCImHrKPzZAdnpbbcY
+https://watch.screencastify.com/v/YTie9yZ0CA4dzEw3l2qk
 
 
 ## Credits
