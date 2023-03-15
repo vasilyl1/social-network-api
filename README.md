@@ -48,8 +48,6 @@ Step 5: launch the express.js server by starting the following command from your
 Step 6: OTIONAL: You can use seeding of the database with AI bot. If seeding is not used, the data can be easily populated with the API use of the system - for that please refer to API Description part of this reference.
 Seeding with AI bot - please navigage to Seeding with AI part below for instructions.
 
-Step 6: he contact information for questions is provided below for the reference
-
 ## Usage
 
 Please refer to the video below which demonstrates the use of API (Insomnia tool has been used to correctly demonstrate GET, POST, PUT and DELETE requests):
