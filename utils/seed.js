@@ -5,7 +5,7 @@ const { getUser, getThought, getReaction } = require('./data');
 connection.on('error', (err) => err);
 
 connection.once('open', async () => {
-  console.log('connected');
+  console.log('connected and seeding. Please allow 2-3 minutes as OpenAI is questioned');
   await Thought.deleteMany({});
   await User.deleteMany({});
 
@@ -17,46 +17,45 @@ connection.once('open', async () => {
   // generating users
   const users = [];
   for (let i = 0; i < noUsers; i++) { // generate users
-    const name = getUser(); // get random username and e-mail for the new user
+    const name = await getUser(); // get random username and e-mail for the new user
     const newUser = {
       username: name.username,
       email: name.email
     }
     users.push(newUser);
   }
+
   // generating thoughts
   const thoughts = []; // generate random thoughts for the created users
   const thoughtsNumber = Math.floor(Math.random() * noThoughts); // get random number of thougths
   for (let i = 0; i < thoughtsNumber; i++) {
     const newThought = {
-      thoughtText: getThought(), // gets random text of thought
+      thoughtText: await getThought(), // gets random text of thought
       username: users[Math.floor(Math.random() * noUsers)].username // random user
     }
     thoughts.push(newThought);
   }
 
-
-
   await User.collection.insertMany(users);
   await Thought.collection.insertMany(thoughts);
 
+  // push ID's of generated thoughts to the user's thought array
+  /* await User.findOneAndUpdate(
+    { username: newThought.username },
+    { $addToSet: {thoughts: newThought._id}}
+  ) */
+
   // generating reactions
 
-  let thoughtData = []; // get the newly created id's of all pushed thoughts
-  await Thought.collection('thoughts')
-    .find()
-    .toArray((err, results) => {
-      if (err) throw err;
-      thoughtData = results;
-    });
+  const thoughtData = await Thought.find();
 
   const reactionsNumber = Math.floor(Math.random() * noReactions); // get random number of reactions
   let thoughtToAttach = 0; // randomly choose the thought to attach the reaction
   let newReaction = {};
   for (let i = 0; i < reactionsNumber; i++) {
-    thoughtToAttach = Math.floor(Math.random() * noThoughts); // which thought to attach to
+    thoughtToAttach = Math.floor(Math.random() * thoughtsNumber); // which thought to attach to
     newReaction = {
-      reactionBody: getReaction(thoughtData[thoughtToAttach].thoughtText), // gets random text of reaction
+      reactionBody: await getReaction(thoughtData[thoughtToAttach].thoughtText), // gets random text of reaction
       username: users[Math.floor(Math.random() * noUsers)].username // random user
     }
     await Thought.findOneAndUpdate( // attach the reaction to the thought
@@ -67,20 +66,18 @@ connection.once('open', async () => {
 
   // generating friends
 
-  let userData = []; // get the newly created id's of all pushed thoughts
-  await User.collection('users')
-    .find()
-    .toArray((err, results) => {
-      if (err) throw err;
-      userData = results;
-    });
+  // get the newly created id's of all pushed users
+  const userData = await User.find();
   let randomFriend = 0;
+  let proposedUser = 0;
   for (let i = 0; i < noFriends; i++) {
     randomFriend = Math.floor(Math.random() * noUsers); // choose the random friend
+    proposedUser = Math.floor(Math.random() * noUsers); // choose proposed user
     // check so that there is no friendship in place
-    if (!userData.find(element => element._id == userData[randomFriend]._id)) {
+    if (!userData[proposedUser].friends.find(element => element._id == userData[randomFriend]._id) 
+    && (randomFriend != proposedUser) ) {
       await User.findOneAndUpdate( // attach the friend ID to the user
-        { _id: userData[randomFriend]._id },
+        { _id: userData[proposedUser]._id },
         { $addToSet: { friends: userData[randomFriend]._id } }
       );
     }

@@ -1,4 +1,5 @@
 const { connect, connection } = require('mongoose');
+require('dotenv').config();
 
 connect('mongodb://localhost/myFaceBook', {
   useNewUrlParser: true,
