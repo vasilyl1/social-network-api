@@ -21,6 +21,10 @@ That application is not deployed, however the link to the video is provided belo
 
   [Usage](#usage)
 
+  [MongoDB_Schema](#MongoDB_Schema)
+
+  [API_Description](#API_Description)
+
   [License](#license)
 
   [Contributing](#contributing)
@@ -46,6 +50,86 @@ Step 6: he contact information for questions is provided below for the reference
 Please refer to the video below which demonstrates the use of API (Insomnia tool has been used to correctly demonstrate GET, POST, PUT and DELETE requests):
 
 https://watch.screencastify.com/v/YTie9yZ0CA4dzEw3l2qk
+
+
+## MongoDB_Schema
+
+User
+
+username :String :Unique :Required :Trimmed
+email :String :Required :Unique
+thoughts :Array of _id values referencing the Thought model
+friends :Array of _id values referencing the User model (self-reference)
+Virtual called friendCount that retrieves the length of the user's friends array field on query.
+
+Thought
+
+thoughtText :String :Required :between 1 and 280 characters
+createdAt :Date :default value to the current timestamp
+username (the user that created this thought) :String :Required
+reactions (these are like replies) :array of nested documents created with the reactionSchema
+Virtual called reactionCount that retrieves the length of the thought's reactions array field on query
+
+Reaction
+
+reactionId :Mongoose's ObjectId data type :default value is set to a new ObjectId
+reactionBody :String :Required :280 character maximum
+username :String :Required :createdAt
+Date :set default value to the current timestamp :getter method to format the timestamp on query
+
+Reaction is not a model, but used as the reaction field's subdocument schema in the Thought model.
+
+## API_Description
+
+
+### /api/users
+
+GET all users
+
+GET a single user by its _id and populated thought and friend data
+
+POST a new user:
+
+// example data
+{
+  "username": "lernantino",
+  "email": "lernantino@gmail.com"
+}
+
+PUT to update a user by its _id
+
+DELETE to remove user by its _id
+
+### /api/users/:userId/friends/:friendId
+
+POST to add a new friend to a user's friend list
+
+DELETE to remove a friend from a user's friend list
+
+### /api/thoughts
+
+GET to get all thoughts
+
+GET to get a single thought by its _id
+
+POST to create a new thought (don't forget to push the created thought's _id to the associated user's thoughts array field)
+
+// example data
+{
+  "thoughtText": "Here's a cool thought...",
+  "username": "lernantino",
+  "userId": "5edff358a0fcb779aa7b118b"
+}
+PUT to update a thought by its _id
+
+DELETE to remove a thought by its _id
+
+### /api/thoughts/:thoughtId/reactions
+
+POST to create a reaction stored in a single thought's reactions array field
+
+DELETE to pull and remove a reaction by the reaction's reactionId value
+
 
 
 ## Credits
