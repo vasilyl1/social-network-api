@@ -25,6 +25,8 @@ That application is not deployed, however the link to the video is provided belo
 
   [API_Description](#API_Description)
 
+  [Seeding_with_AI](#Seeding_with_AI)
+
   [License](#license)
 
   [Contributing](#contributing)
@@ -43,6 +45,9 @@ Step 4: make sure MongoDB is installed on your machine
 
 Step 5: launch the express.js server by starting the following command from your project directory: npm start
 
+Step 6: OTIONAL: You can use seeding of the database with AI bot. If seeding is not used, the data can be easily populated with the API use of the system - for that please refer to API Description part of this reference.
+Seeding with AI bot - please navigage to Seeding with AI part below for instructions.
+
 Step 6: he contact information for questions is provided below for the reference
 
 ## Usage
@@ -57,25 +62,39 @@ https://watch.screencastify.com/v/YTie9yZ0CA4dzEw3l2qk
 User
 
 username :String :Unique :Required :Trimmed
+
 email :String :Required :Unique
+
 thoughts :Array of _id values referencing the Thought model
+
 friends :Array of _id values referencing the User model (self-reference)
+
 Virtual called friendCount that retrieves the length of the user's friends array field on query.
+
 
 Thought
 
 thoughtText :String :Required :between 1 and 280 characters
+
 createdAt :Date :default value to the current timestamp
+
 username (the user that created this thought) :String :Required
+
 reactions (these are like replies) :array of nested documents created with the reactionSchema
+
 Virtual called reactionCount that retrieves the length of the thought's reactions array field on query
+
 
 Reaction
 
 reactionId :Mongoose's ObjectId data type :default value is set to a new ObjectId
+
 reactionBody :String :Required :280 character maximum
+
 username :String :Required :createdAt
+
 Date :set default value to the current timestamp :getter method to format the timestamp on query
+
 
 Reaction is not a model, but used as the reaction field's subdocument schema in the Thought model.
 
@@ -131,6 +150,22 @@ POST to create a reaction stored in a single thought's reactions array field
 DELETE to pull and remove a reaction by the reaction's reactionId value
 
 
+## Seeding_with_AI
+
+The system allows initial seed of the MongoDB database to be performed with the use of artificial intelligence - AI bot model. Should that method be chosen, the results are impressive as it allow to generate data for the variable number of users with the thoughts and reactions. 
+The data is based on statistical knowledge of AI model and can be conveniently used for the testing purposes of the system.
+
+In order to be able to contact the AI bot, you should get the API key for the OpenAI. Please navigate to platform.openai.com resource for further information on how to register and get the API keys.
+
+The API key for OpenAI should be stored in the local .env file as the environmental variable, here is the example how to do so:
+
+openAI='This is your personal API string code obtained from OpenAI'
+
+Once that is set up, follow the installation steps 1 to 4 of the manual above and run NPM RUN SEED from your application directory terminal in order to seed the database.
+
+Please allow 2-3 minutes for the process to complete as the AI bot takes the time to respond to the multiple questions and this takes time. Do not terminate the process until it finishes.
+
+Additional parameters can be changed in the code to optimise the number of users, thougths and reactions. If there is a need to change these, please navigate to seed.js file located in /utils directory and refer the lines starting as of line 13 of that file.
 
 ## Credits
 

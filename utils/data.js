@@ -11,7 +11,7 @@ const botResponse = async (input) => {
     const completion = await openai.createCompletion({
       model: 'text-davinci-003',
       prompt: input,
-      max_tokens: 10,
+      max_tokens: 20,
       temperature: 0.8
     });
     return completion.data.choices[0].text.replace(/^[\r\n]+$/, '').trim();
